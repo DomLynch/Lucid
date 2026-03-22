@@ -5,42 +5,53 @@ Extracted from Hindsight (239K LOC → ~2K LOC).
 Three operations: retain(), recall(), reflect().
 """
 
-__version__ = "0.1.0"
-
-from lucid.retain import retain
+from lucid.interfaces import Embedder, EntityResolver, LLMClient, MemoryStore, Reranker
 from lucid.recall import recall
 from lucid.reflect import reflect
+from lucid.retain import retain
 from lucid.store import SQLiteMemoryStore
 from lucid.types import (
-    Fact,
-    Entity,
-    Observation,
-    MentalModel,
     Bank,
+    Budget,
+    Entity,
+    EntityType,
+    Fact,
+    FactKind,
+    FactType,
+    LinkType,
     MemoryLink,
-    RetainResult,
+    MentalModel,
+    Observation,
     RecallResult,
     ReflectResult,
+    RetainResult,
 )
-from lucid.interfaces import LLMClient, Embedder, Reranker, MemoryStore, EntityResolver
+
+__version__ = "0.1.0"
 
 __all__ = [
+    "__version__",
     "retain",
     "recall",
     "reflect",
     "SQLiteMemoryStore",
-    "Fact",
-    "Entity",
-    "Observation",
-    "MentalModel",
-    "Bank",
-    "MemoryLink",
-    "RetainResult",
-    "RecallResult",
-    "ReflectResult",
     "LLMClient",
     "Embedder",
     "Reranker",
     "MemoryStore",
     "EntityResolver",
+    "Bank",
+    "Budget",
+    "Fact",
+    "FactType",
+    "FactKind",
+    "Entity",
+    "EntityType",
+    "MemoryLink",
+    "LinkType",
+    "Observation",
+    "MentalModel",
+    "RetainResult",
+    "RecallResult",
+    "ReflectResult",
 ]

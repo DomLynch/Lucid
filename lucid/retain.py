@@ -408,6 +408,14 @@ async def _extract_facts(
         content_str = response.get("content", "")
         usage = response.get("usage", {"input_tokens": 0, "output_tokens": 0, "total_tokens": 0})
 
+        # Strip thinking tags if present (Qwen models wrap output in <think>...</think>)
+        if "<think>" in content_str:
+            # Remove everything between <think> and </think>
+            import re as _re
+            content_str = _re.sub(r'<think>.*?</think>', '', content_str, flags=_re.DOTALL).strip()
+
+        _log.debug("LLM response (first 500 chars): %s", content_str[:500])
+
         # Parse JSON response
         parsed = _parse_extraction_response(content_str)
         return parsed, usage
