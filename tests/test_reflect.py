@@ -33,7 +33,7 @@ class MockReflectLLM:
         self._script = list(script)
         self._call_count = 0
 
-    async def complete(self, messages, temperature=0.0, max_tokens=4096, response_format=None):
+    async def complete(self, messages, temperature=0.0, max_tokens=4096, response_format=None, tools=None):
         if self._call_count < len(self._script):
             response = self._script[self._call_count]
         else:
@@ -245,6 +245,67 @@ class TestReflect:
 
         result = await reflect(bank_id="test", query="test", llm=llm)
         assert result.text == "Here is my synthesis of the available information."
+
+    async def test_tools_passed_to_llm(self):
+        """Verify tools are actually passed to the LLM complete() call."""
+
+        class ToolTrackingLLM:
+            def __init__(self):
+                self.received_tools = None
+                self._call_count = 0
+
+            async def complete(self, messages, temperature=0.0, max_tokens=4096,
+                             response_format=None, tools=None):
+                if self._call_count == 0:
+                    self.received_tools = tools
+                self._call_count += 1
+                return {
+                    "content": "",
+                    "tool_calls": [{"id": "call_1", "name": "done",
+                                   "arguments": {"answer": "test"}}],
+                    "usage": {"input_tokens": 10, "output_tokens": 5, "total_tokens": 15},
+                }
+
+        llm = ToolTrackingLLM()
+        await reflect(bank_id="test", query="test", llm=llm)
+
+        # Tools should have been passed on first call (not last)
+        assert llm.received_tools is not None
+        tool_names = {t["function"]["name"] for t in llm.received_tools}
+        assert "recall" in tool_names
+        assert "search_observations" in tool_names
+        assert "done" in tool_names
+
+    async def test_tools_removed_on_last_iteration(self):
+        """On last iteration, tools should be None to force text response."""
+
+        class ToolTrackingLLM:
+            def __init__(self):
+                self.tools_per_call: list = []
+
+            async def complete(self, messages, temperature=0.0, max_tokens=4096,
+                             response_format=None, tools=None):
+                self.tools_per_call.append(tools)
+                # Always call recall to keep iterating
+                if len(self.tools_per_call) < 2:
+                    return {
+                        "content": "", "tool_calls": [{"id": "call_1", "name": "recall",
+                                                       "arguments": {"query": "test"}}],
+                        "usage": {"input_tokens": 10, "output_tokens": 5, "total_tokens": 15},
+                    }
+                # Last call — return text
+                return {
+                    "content": "Final answer", "tool_calls": [],
+                    "usage": {"input_tokens": 10, "output_tokens": 5, "total_tokens": 15},
+                }
+
+        llm = ToolTrackingLLM()
+        store = MockReflectStore()
+        await reflect(bank_id="test", query="test", llm=llm, store=store, max_iterations=2)
+
+        # First call should have tools, last should not
+        assert llm.tools_per_call[0] is not None  # Tools provided
+        assert llm.tools_per_call[-1] is None  # No tools on last iteration
 
 
 @pytest.mark.asyncio

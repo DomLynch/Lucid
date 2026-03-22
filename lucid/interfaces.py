@@ -40,6 +40,7 @@ class LLMClient(Protocol):
         temperature: float = 0.0,
         max_tokens: int = 4096,
         response_format: dict[str, Any] | None = None,
+        tools: list[dict[str, Any]] | None = None,
     ) -> dict[str, Any]:
         """Send a completion request.
 
@@ -48,9 +49,11 @@ class LLMClient(Protocol):
             temperature: Sampling temperature.
             max_tokens: Maximum output tokens.
             response_format: Optional JSON schema for structured output.
+            tools: Optional tool schemas in OpenAI format (for agentic loops).
 
         Returns:
-            {"content": str, "usage": {"input_tokens": int, "output_tokens": int, "total_tokens": int}}
+            {"content": str, "tool_calls": list | None,
+             "usage": {"input_tokens": int, "output_tokens": int, "total_tokens": int}}
         """
         ...
 

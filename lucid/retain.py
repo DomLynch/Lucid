@@ -329,8 +329,14 @@ async def retain(
         for fact, emb in zip(facts, embeddings):
             fact.embedding = emb
 
-    # Step 4: Deduplicate entities
+    # Step 4: Deduplicate entities (within this batch)
     unique_entities = _dedup_entities(all_entities)
+
+    # Step 4b: Cross-retain entity resolution (merge with existing entities)
+    if store:
+        unique_entities = await _resolve_cross_retain_entities(
+            bank_id, unique_entities, store
+        )
 
     # Step 5: Create entity links (facts sharing the same entity)
     entity_links = _create_entity_links(facts, unique_entities)
@@ -461,6 +467,47 @@ def _dedup_entities(entities: list[Entity]) -> list[Entity]:
         else:
             seen[h] = e
     return list(seen.values())
+
+
+async def _resolve_cross_retain_entities(
+    bank_id: str,
+    new_entities: list[Entity],
+    store: Any,
+) -> list[Entity]:
+    """Resolve new entities against existing ones in the store.
+
+    If an entity with the same text and type already exists, merge
+    the new fact_ids into the existing entity instead of creating
+    a duplicate. This ensures a canonical entity graph across
+    multiple retain() calls.
+    """
+    resolved: list[Entity] = []
+
+    try:
+        existing_entities = await store.get_entities(bank_id)
+    except Exception:
+        return new_entities
+
+    # Build lookup by (text_lower, entity_type)
+    existing_map: dict[tuple[str, str], Entity] = {}
+    for e in existing_entities:
+        key = (e.text.lower(), e.entity_type.value)
+        existing_map[key] = e
+
+    for new_ent in new_entities:
+        key = (new_ent.text.lower(), new_ent.entity_type.value)
+        if key in existing_map:
+            # Merge fact_ids into existing entity
+            existing = existing_map[key]
+            for fid in new_ent.fact_ids:
+                if fid not in existing.fact_ids:
+                    existing.fact_ids.append(fid)
+            resolved.append(existing)
+        else:
+            resolved.append(new_ent)
+            existing_map[key] = new_ent
+
+    return resolved
 
 
 def _create_entity_links(facts: list[Fact], entities: list[Entity]) -> list[MemoryLink]:

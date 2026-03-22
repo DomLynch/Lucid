@@ -149,11 +149,12 @@ async def reflect(
 
         _log.debug("Reflect iteration %d/%d", iteration + 1, max_iterations)
 
-        # Call LLM
+        # Call LLM with tools (empty list on last iteration forces text response)
         response = await llm.complete(
             messages=messages,
             temperature=0.3,
             max_tokens=2048,
+            tools=tools if tools else None,
         )
 
         content = response.get("content", "")

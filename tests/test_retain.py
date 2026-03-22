@@ -341,3 +341,60 @@ class TestRetain:
 
         user_msg = llm.calls[0]["messages"][1]["content"]
         assert "March 22, 2026" in user_msg
+
+    async def test_cross_retain_entity_resolution(self):
+        """Entities from separate retain() calls should merge, not duplicate."""
+
+        # First retain creates "Dominic" entity
+        llm1 = MockLLM(response={
+            "content": json.dumps({"facts": [{
+                "what": "Dominic lives in Dubai", "when": "N/A", "where": "Dubai",
+                "who": "Dominic", "why": "N/A", "fact_type": "world",
+                "entities": [{"text": "Dominic"}],
+            }]}),
+            "usage": {"input_tokens": 50, "output_tokens": 30, "total_tokens": 80},
+        })
+
+        # MockStore that tracks entities with get_entities support
+        class TrackingStore:
+            def __init__(self):
+                self.facts = []
+                self.entities = []
+                self.links = []
+
+            async def save_facts(self, facts):
+                self.facts.extend(facts)
+
+            async def save_entities(self, entities):
+                self.entities = list(entities)  # Replace to track final state
+
+            async def save_links(self, links):
+                self.links.extend(links)
+
+            async def get_entities(self, bank_id):
+                return list(self.entities)
+
+        store = TrackingStore()
+
+        # First retain
+        await retain(bank_id="test", content="Dominic lives in Dubai", llm=llm1, store=store)
+        assert len(store.entities) == 1
+        first_entity_id = store.entities[0].id
+
+        # Second retain mentions same entity
+        llm2 = MockLLM(response={
+            "content": json.dumps({"facts": [{
+                "what": "Dominic has a new baby", "when": "N/A", "where": "N/A",
+                "who": "Dominic", "why": "N/A", "fact_type": "world",
+                "entities": [{"text": "Dominic"}],
+            }]}),
+            "usage": {"input_tokens": 50, "output_tokens": 30, "total_tokens": 80},
+        })
+
+        await retain(bank_id="test", content="Dominic has a baby", llm=llm2, store=store)
+
+        # Should still be 1 entity (merged), not 2 (duplicated)
+        assert len(store.entities) == 1
+        assert store.entities[0].id == first_entity_id
+        # Entity should now reference facts from both retains
+        assert len(store.entities[0].fact_ids) == 2
