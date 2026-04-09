@@ -190,7 +190,7 @@ class Observation:
     higher-level than raw facts — they represent understood
     patterns or entity-specific knowledge.
 
-    Example: "Dominic prefers direct communication" (derived
+    Example: "Alice prefers direct communication" (derived
     from multiple facts about communication style).
     """
 
@@ -209,7 +209,7 @@ class MentalModel:
     """A synthesized understanding — highest level of the hierarchy.
 
     Created by reflect() when patterns emerge across observations.
-    Example: "Dominic is a high-intensity founder who values quality
+    Example: "Alice is a high-intensity founder who values quality
     over speed and manages multiple AI agents simultaneously."
     """
 
