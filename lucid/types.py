@@ -149,7 +149,7 @@ class Entity:
 
     id: str = field(default_factory=_new_id)
     bank_id: str = ""
-    text: str = ""              # Entity name (e.g., "Dominic")
+    text: str = ""              # Entity name (e.g., "Alice")
     entity_type: EntityType = EntityType.OTHER
     embedding: list[float] = field(default_factory=list)
     fact_ids: list[str] = field(default_factory=list)  # Facts that mention this entity

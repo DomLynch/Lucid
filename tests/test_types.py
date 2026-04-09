@@ -59,16 +59,16 @@ class TestFact:
 
     def test_create_with_content(self):
         f = Fact(
-            text="Dominic lives in Dubai",
-            what="Dominic lives in Dubai",
-            where="Dubai",
-            who="Dominic",
+            text="Alice lives in London",
+            what="Alice lives in London",
+            where="London",
+            who="Alice",
             fact_type=FactType.WORLD,
             fact_kind=FactKind.CONVERSATION,
         )
-        assert f.text == "Dominic lives in Dubai"
-        assert f.where == "Dubai"
-        assert f.who == "Dominic"
+        assert f.text == "Alice lives in London"
+        assert f.where == "London"
+        assert f.who == "Alice"
 
     def test_has_embedding(self):
         f = Fact(embedding=[0.1, 0.2, 0.3])
@@ -107,13 +107,13 @@ class TestFact:
 
 class TestEntity:
     def test_create_default(self):
-        e = Entity(text="Dominic", entity_type=EntityType.PERSON)
-        assert e.text == "Dominic"
+        e = Entity(text="Alice", entity_type=EntityType.PERSON)
+        assert e.text == "Alice"
         assert e.entity_type == EntityType.PERSON
 
     def test_equality_case_insensitive(self):
-        e1 = Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="b1")
-        e2 = Entity(text="dominic", entity_type=EntityType.PERSON, bank_id="b1")
+        e1 = Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="b1")
+        e2 = Entity(text="alice", entity_type=EntityType.PERSON, bank_id="b1")
         assert e1 == e2
 
     def test_inequality_different_type(self):
@@ -122,14 +122,14 @@ class TestEntity:
         assert e1 != e2
 
     def test_hashable(self):
-        e1 = Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="b1")
-        e2 = Entity(text="dominic", entity_type=EntityType.PERSON, bank_id="b1")
+        e1 = Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="b1")
+        e2 = Entity(text="alice", entity_type=EntityType.PERSON, bank_id="b1")
         assert hash(e1) == hash(e2)
         assert len({e1, e2}) == 1  # Dedup in set
 
     def test_different_bank_not_equal(self):
-        e1 = Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="b1")
-        e2 = Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="b2")
+        e1 = Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="b1")
+        e2 = Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="b2")
         assert e1 != e2
 
 
@@ -144,12 +144,12 @@ class TestMemoryLink:
 class TestObservation:
     def test_create(self):
         obs = Observation(
-            text="Dominic prefers direct communication",
+            text="Alice prefers direct communication",
             entity_id="ent_1",
             source_fact_ids=["f1", "f2", "f3"],
             confidence=0.9,
         )
-        assert obs.text == "Dominic prefers direct communication"
+        assert obs.text == "Alice prefers direct communication"
         assert len(obs.source_fact_ids) == 3
         assert obs.entity_id == "ent_1"
 
@@ -157,10 +157,10 @@ class TestObservation:
 class TestMentalModel:
     def test_create(self):
         mm = MentalModel(
-            text="Dominic is a high-intensity founder",
+            text="Alice is a high-intensity founder",
             observation_ids=["obs_1", "obs_2"],
         )
-        assert mm.text == "Dominic is a high-intensity founder"
+        assert mm.text == "Alice is a high-intensity founder"
         assert len(mm.observation_ids) == 2
 
 
@@ -240,7 +240,7 @@ class TestReflectResult:
 
     def test_with_content(self):
         r = ReflectResult(
-            text="Dominic is a founder...",
+            text="Alice is a founder...",
             based_on={"f1": "fact text 1", "f2": "fact text 2"},
             tool_calls=3,
         )

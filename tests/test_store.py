@@ -154,20 +154,20 @@ class TestVectorSearch:
 class TestTextSearch:
     async def test_substring_match(self, store):
         facts = [
-            Fact(id="f1", bank_id="b1", text="Dominic lives in Dubai"),
+            Fact(id="f1", bank_id="b1", text="Alice lives in London"),
             Fact(id="f2", bank_id="b1", text="The weather is nice"),
         ]
         await store.save_facts(facts)
 
-        results = await store.search_facts_by_text("b1", "Dubai")
+        results = await store.search_facts_by_text("b1", "London")
         assert len(results) == 1
         assert results[0].id == "f1"
 
     async def test_case_insensitive(self, store):
-        facts = [Fact(id="f1", bank_id="b1", text="DOMINIC")]
+        facts = [Fact(id="f1", bank_id="b1", text="ALICE")]
         await store.save_facts(facts)
 
-        results = await store.search_facts_by_text("b1", "dominic")
+        results = await store.search_facts_by_text("b1", "alice")
         assert len(results) == 1
 
     async def test_no_match(self, store):
@@ -182,8 +182,8 @@ class TestTextSearch:
 class TestEntities:
     async def test_save_and_get(self, store):
         entities = [
-            Entity(id="e1", bank_id="b1", text="Dominic", entity_type=EntityType.PERSON, fact_ids=["f1"]),
-            Entity(id="e2", bank_id="b1", text="Dubai", entity_type=EntityType.LOCATION, fact_ids=["f1"]),
+            Entity(id="e1", bank_id="b1", text="Alice", entity_type=EntityType.PERSON, fact_ids=["f1"]),
+            Entity(id="e2", bank_id="b1", text="London", entity_type=EntityType.LOCATION, fact_ids=["f1"]),
         ]
         await store.save_entities(entities)
 
@@ -192,19 +192,19 @@ class TestEntities:
 
     async def test_get_by_text(self, store):
         await store.save_entities([
-            Entity(id="e1", bank_id="b1", text="Dominic", entity_type=EntityType.PERSON),
+            Entity(id="e1", bank_id="b1", text="Alice", entity_type=EntityType.PERSON),
         ])
 
-        found = await store.get_entity_by_text("b1", "Dominic")
+        found = await store.get_entity_by_text("b1", "Alice")
         assert found is not None
         assert found.id == "e1"
 
     async def test_get_by_text_case_insensitive(self, store):
         await store.save_entities([
-            Entity(id="e1", bank_id="b1", text="Dominic", entity_type=EntityType.PERSON),
+            Entity(id="e1", bank_id="b1", text="Alice", entity_type=EntityType.PERSON),
         ])
 
-        found = await store.get_entity_by_text("b1", "dominic")
+        found = await store.get_entity_by_text("b1", "alice")
         assert found is not None
 
     async def test_fact_ids_round_trip(self, store):
@@ -255,7 +255,7 @@ class TestLinks:
 class TestObservations:
     async def test_save_and_get(self, store):
         obs = [
-            Observation(id="o1", bank_id="b1", text="Dominic prefers direct communication"),
+            Observation(id="o1", bank_id="b1", text="Alice prefers direct communication"),
             Observation(id="o2", bank_id="b1", text="Brain uses a 3-lane architecture"),
         ]
         await store.save_observations(obs)

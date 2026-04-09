@@ -96,40 +96,40 @@ class TestReflect:
             {
                 "content": "",
                 "tool_calls": [{"id": "call_1", "name": "done",
-                               "arguments": {"answer": "Dominic is a founder in Dubai."}}],
+                               "arguments": {"answer": "Alice is a founder in London."}}],
                 "usage": {"input_tokens": 100, "output_tokens": 50, "total_tokens": 150},
             },
         ])
 
         result = await reflect(
             bank_id="test",
-            query="Who is Dominic?",
+            query="Who is Alice?",
             llm=llm,
         )
 
-        assert result.text == "Dominic is a founder in Dubai."
+        assert result.text == "Alice is a founder in London."
         assert result.tool_calls >= 1
 
     async def test_recall_then_done(self):
         """LLM first recalls facts, then synthesizes with done()."""
         facts = [
-            Fact(id="f1", text="Dominic lives in Dubai", bank_id="test"),
-            Fact(id="f2", text="Dominic is building Brain", bank_id="test"),
+            Fact(id="f1", text="Alice lives in London", bank_id="test"),
+            Fact(id="f2", text="Alice is building Brain", bank_id="test"),
         ]
 
         llm = MockReflectLLM([
             # Step 1: recall
             {
-                "content": "Let me search for information about Dominic.",
+                "content": "Let me search for information about Alice.",
                 "tool_calls": [{"id": "call_1", "name": "recall",
-                               "arguments": {"query": "Dominic"}}],
+                               "arguments": {"query": "Alice"}}],
                 "usage": {"input_tokens": 100, "output_tokens": 30, "total_tokens": 130},
             },
             # Step 2: done
             {
                 "content": "",
                 "tool_calls": [{"id": "call_2", "name": "done",
-                               "arguments": {"answer": "Based on the facts, Dominic lives in Dubai and is building Brain."}}],
+                               "arguments": {"answer": "Based on the facts, Alice lives in London and is building Brain."}}],
                 "usage": {"input_tokens": 200, "output_tokens": 50, "total_tokens": 250},
             },
         ])
@@ -138,31 +138,31 @@ class TestReflect:
 
         result = await reflect(
             bank_id="test",
-            query="Tell me about Dominic",
+            query="Tell me about Alice",
             llm=llm,
             store=store,
         )
 
-        assert "Dominic" in result.text
+        assert "Alice" in result.text
         assert result.tool_calls == 2
 
     async def test_citations_tracked(self):
         """Facts retrieved via recall() are tracked in based_on."""
         facts = [
-            Fact(id="f1", text="Dominic lives in Dubai", bank_id="test"),
+            Fact(id="f1", text="Alice lives in London", bank_id="test"),
         ]
 
         llm = MockReflectLLM([
             {
                 "content": "",
                 "tool_calls": [{"id": "call_1", "name": "recall",
-                               "arguments": {"query": "Dominic"}}],
+                               "arguments": {"query": "Alice"}}],
                 "usage": {"input_tokens": 50, "output_tokens": 20, "total_tokens": 70},
             },
             {
                 "content": "",
                 "tool_calls": [{"id": "call_2", "name": "done",
-                               "arguments": {"answer": "He lives in Dubai."}}],
+                               "arguments": {"answer": "He lives in London."}}],
                 "usage": {"input_tokens": 50, "output_tokens": 20, "total_tokens": 70},
             },
         ])
@@ -171,13 +171,13 @@ class TestReflect:
 
         result = await reflect(
             bank_id="test",
-            query="Where does Dominic live?",
+            query="Where does Alice live?",
             llm=llm,
             store=store,
         )
 
         assert "f1" in result.based_on
-        assert "Dubai" in result.based_on["f1"]
+        assert "London" in result.based_on["f1"]
 
     async def test_max_iterations(self):
         """Agent stops after max iterations even without done()."""
@@ -324,7 +324,7 @@ class TestToolExecution:
         assert "f1" in based_on
 
     async def test_search_observations_tool(self):
-        obs = [Observation(text="Dominic prefers direct communication")]
+        obs = [Observation(text="Alice prefers direct communication")]
         store = MockReflectStore(observations=obs)
 
         result = await _execute_tool(

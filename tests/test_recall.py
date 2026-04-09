@@ -278,21 +278,21 @@ class TestRecall:
 
     async def test_entity_search_contributes(self):
         facts = [
-            Fact(id="f1", text="Dominic lives in Dubai", bank_id="test"),
+            Fact(id="f1", text="Alice lives in London", bank_id="test"),
             Fact(id="f2", text="The weather is nice", bank_id="test"),
         ]
         entities = [
-            Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="test", fact_ids=["f1"]),
+            Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="test", fact_ids=["f1"]),
         ]
         store = MockStore(facts=facts, entities=entities)
 
         result = await recall(
             bank_id="test",
-            query="Dominic",
+            query="Alice",
             store=store,
         )
 
-        # "f1" should appear because it's linked to entity "Dominic"
+        # "f1" should appear because it's linked to entity "Alice"
         result_ids = [f.id for f in result.results]
         assert "f1" in result_ids
 

@@ -39,14 +39,14 @@ class MockLLM:
         self._response = response or {
             "content": json.dumps({"facts": [
                 {
-                    "what": "Dominic lives in Dubai",
+                    "what": "Alice lives in London",
                     "when": "N/A",
-                    "where": "Dubai",
-                    "who": "Dominic",
+                    "where": "London",
+                    "who": "Alice",
                     "why": "N/A",
                     "fact_type": "world",
                     "fact_kind": "conversation",
-                    "entities": [{"text": "Dominic"}, {"text": "Dubai"}],
+                    "entities": [{"text": "Alice"}, {"text": "London"}],
                 }
             ]}),
             "usage": {"input_tokens": 100, "output_tokens": 50, "total_tokens": 150},
@@ -145,7 +145,7 @@ class TestTemporalInference:
 
     def test_no_temporal_expression(self):
         event_date = datetime(2026, 3, 22, tzinfo=timezone.utc)
-        result = _infer_temporal_date("Dominic likes coffee", event_date)
+        result = _infer_temporal_date("Alice likes coffee", event_date)
         assert result is None
 
     def test_no_event_date(self):
@@ -181,15 +181,15 @@ class TestEntityClassification:
 class TestBuildFactText:
     def test_all_dimensions(self):
         text = _build_fact_text({
-            "what": "Dominic lives in Dubai",
-            "who": "Dominic",
-            "where": "Dubai",
+            "what": "Alice lives in London",
+            "who": "Alice",
+            "where": "London",
             "when": "2024",
             "why": "Work opportunities",
         })
-        assert "Dominic lives in Dubai" in text
-        assert "Involving: Dominic" in text
-        assert "Location: Dubai" in text
+        assert "Alice lives in London" in text
+        assert "Involving: Alice" in text
+        assert "Location: London" in text
         assert "When: 2024" in text
         assert "Context: Work opportunities" in text
 
@@ -212,16 +212,16 @@ class TestBuildFactText:
 
 class TestEntityDedup:
     def test_dedup_same_entity(self):
-        e1 = Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="b1", fact_ids=["f1"])
-        e2 = Entity(text="dominic", entity_type=EntityType.PERSON, bank_id="b1", fact_ids=["f2"])
+        e1 = Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="b1", fact_ids=["f1"])
+        e2 = Entity(text="alice", entity_type=EntityType.PERSON, bank_id="b1", fact_ids=["f2"])
         result = _dedup_entities([e1, e2])
         assert len(result) == 1
         assert "f1" in result[0].fact_ids
         assert "f2" in result[0].fact_ids
 
     def test_different_entities_kept(self):
-        e1 = Entity(text="Dominic", entity_type=EntityType.PERSON, bank_id="b1")
-        e2 = Entity(text="Dubai", entity_type=EntityType.LOCATION, bank_id="b1")
+        e1 = Entity(text="Alice", entity_type=EntityType.PERSON, bank_id="b1")
+        e2 = Entity(text="London", entity_type=EntityType.LOCATION, bank_id="b1")
         result = _dedup_entities([e1, e2])
         assert len(result) == 2
 
@@ -233,7 +233,7 @@ class TestEntityDedup:
 class TestEntityLinks:
     def test_creates_links_for_shared_entity(self):
         facts = [Fact(id="f1"), Fact(id="f2"), Fact(id="f3")]
-        entities = [Entity(text="Dominic", fact_ids=["f1", "f2", "f3"])]
+        entities = [Entity(text="Alice", fact_ids=["f1", "f2", "f3"])]
         links = _create_entity_links(facts, entities)
         # 3 facts sharing 1 entity = 3 links (f1-f2, f1-f3, f2-f3)
         assert len(links) == 3
@@ -258,7 +258,7 @@ class TestRetain:
 
         result = await retain(
             bank_id="test-bank",
-            content="Dominic lives in Dubai",
+            content="Alice lives in London",
             llm=llm,
             embedder=embedder,
             store=store,
@@ -301,7 +301,7 @@ class TestRetain:
             store=store,
         )
 
-        assert len(store.entities) >= 1  # "Dominic" and "Dubai" from mock
+        assert len(store.entities) >= 1  # "Alice" and "London" from mock
 
     async def test_retain_token_usage_tracked(self):
         llm = MockLLM()
@@ -345,12 +345,12 @@ class TestRetain:
     async def test_cross_retain_entity_resolution(self):
         """Entities from separate retain() calls should merge, not duplicate."""
 
-        # First retain creates "Dominic" entity
+        # First retain creates "Alice" entity
         llm1 = MockLLM(response={
             "content": json.dumps({"facts": [{
-                "what": "Dominic lives in Dubai", "when": "N/A", "where": "Dubai",
-                "who": "Dominic", "why": "N/A", "fact_type": "world",
-                "entities": [{"text": "Dominic"}],
+                "what": "Alice lives in London", "when": "N/A", "where": "London",
+                "who": "Alice", "why": "N/A", "fact_type": "world",
+                "entities": [{"text": "Alice"}],
             }]}),
             "usage": {"input_tokens": 50, "output_tokens": 30, "total_tokens": 80},
         })
@@ -377,21 +377,21 @@ class TestRetain:
         store = TrackingStore()
 
         # First retain
-        await retain(bank_id="test", content="Dominic lives in Dubai", llm=llm1, store=store)
+        await retain(bank_id="test", content="Alice lives in London", llm=llm1, store=store)
         assert len(store.entities) == 1
         first_entity_id = store.entities[0].id
 
         # Second retain mentions same entity
         llm2 = MockLLM(response={
             "content": json.dumps({"facts": [{
-                "what": "Dominic has a new baby", "when": "N/A", "where": "N/A",
-                "who": "Dominic", "why": "N/A", "fact_type": "world",
-                "entities": [{"text": "Dominic"}],
+                "what": "Alice has a new baby", "when": "N/A", "where": "N/A",
+                "who": "Alice", "why": "N/A", "fact_type": "world",
+                "entities": [{"text": "Alice"}],
             }]}),
             "usage": {"input_tokens": 50, "output_tokens": 30, "total_tokens": 80},
         })
 
-        await retain(bank_id="test", content="Dominic has a baby", llm=llm2, store=store)
+        await retain(bank_id="test", content="Alice has a baby", llm=llm2, store=store)
 
         # Should still be 1 entity (merged), not 2 (duplicated)
         assert len(store.entities) == 1

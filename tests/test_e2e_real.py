@@ -1,12 +1,12 @@
 """
-End-to-end test of Lucid against a real LLM (Ollama on VPS).
+End-to-end test of Lucid against a real LLM (OpenRouter or local Ollama).
 
 This proves the full pipeline works:
 1. retain() extracts facts from real text via LLM
 2. recall() retrieves relevant facts
 3. reflect() synthesizes an answer using the agentic loop
 
-Requires: Ollama running at VPS (49.12.7.18:11434)
+Requires: OPENROUTER_API_KEY env var, or Ollama at OLLAMA_URL
 Run with: python3 tests/test_e2e_real.py
 """
 
@@ -29,7 +29,7 @@ from lucid.reflect import reflect
 
 
 # ---------------------------------------------------------------------------
-# Real LLM client using Ollama on VPS via SSH tunnel or direct
+# Real LLM client — uses OpenRouter or local Ollama
 # ---------------------------------------------------------------------------
 
 OPENROUTER_KEY = os.environ.get("OPENROUTER_API_KEY", "")
@@ -142,13 +142,13 @@ async def main():
         # TEST 1: retain()
         # -------------------------------------------------------------------
         print("\n--- TEST 1: retain() ---")
-        print("Input: paragraph about Dominic")
+        print("Input: paragraph about Alice")
 
         result = await retain(
             bank_id=bank_id,
             content=(
-                "Dominic is building a cognitive AI system called Brain. "
-                "He lives in Dubai and has a new baby. He prefers direct "
+                "Alice is building a cognitive AI system called Brain. "
+                "He lives in London and has a new baby. He prefers direct "
                 "communication and hates sycophancy. He is the founder "
                 "of Global Digital Assets. He previously worked in fintech."
             ),
@@ -180,7 +180,7 @@ async def main():
         result2 = await retain(
             bank_id=bank_id,
             content=(
-                "Dominic is also pursuing a part-time PhD. He works "
+                "Alice is also pursuing a part-time PhD. He works "
                 "12 hours a day and manages multiple dev teams working "
                 "on Brain simultaneously."
             ),
@@ -197,11 +197,11 @@ async def main():
         # TEST 3: recall()
         # -------------------------------------------------------------------
         print("\n--- TEST 3: recall() ---")
-        print("Query: 'What does Dominic do?'")
+        print("Query: 'What does Alice do?'")
 
         recall_result = await recall(
             bank_id=bank_id,
-            query="What does Dominic do?",
+            query="What does Alice do?",
             embedder=embedder,
             store=store,
         )
@@ -220,11 +220,11 @@ async def main():
         # TEST 4: reflect()
         # -------------------------------------------------------------------
         print("\n--- TEST 4: reflect() ---")
-        print("Query: 'Tell me everything about Dominic'")
+        print("Query: 'Tell me everything about Alice'")
 
         reflect_result = await reflect(
             bank_id=bank_id,
-            query="Tell me everything about Dominic and his work.",
+            query="Tell me everything about Alice and his work.",
             llm=llm,
             embedder=embedder,
             store=store,
