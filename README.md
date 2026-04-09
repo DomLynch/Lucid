@@ -20,6 +20,25 @@ No Postgres. No Redis. No Kafka. No Docker. Just SQLite and an LLM.
 
 ---
 
+## Architecture
+
+```mermaid
+flowchart LR
+    I["Conversation / text"] --> T["retain()"]
+    T --> X["LLM fact extraction"]
+    X --> S["SQLiteMemoryStore"]
+    Q["Query"] --> R["recall()"]
+    S --> R
+    E["Embedder / reranker"] --> R
+    R --> F["Relevant facts"]
+    F --> Y["reflect()"]
+    Y --> A["Answer from memory"]
+```
+
+Lucid keeps three operations: retain facts, recall the most relevant memory, then reflect over that memory to answer.
+
+---
+
 ## Size comparison
 
 | Component | Hindsight | Lucid | Reduction |
