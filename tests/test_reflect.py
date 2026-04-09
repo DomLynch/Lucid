@@ -114,7 +114,7 @@ class TestReflect:
         """LLM first recalls facts, then synthesizes with done()."""
         facts = [
             Fact(id="f1", text="Alice lives in London", bank_id="test"),
-            Fact(id="f2", text="Alice is building Brain", bank_id="test"),
+            Fact(id="f2", text="Alice is building Nexus", bank_id="test"),
         ]
 
         llm = MockReflectLLM([
@@ -129,7 +129,7 @@ class TestReflect:
             {
                 "content": "",
                 "tool_calls": [{"id": "call_2", "name": "done",
-                               "arguments": {"answer": "Based on the facts, Alice lives in London and is building Brain."}}],
+                               "arguments": {"answer": "Based on the facts, Alice lives in London and is building Nexus."}}],
                 "usage": {"input_tokens": 200, "output_tokens": 50, "total_tokens": 250},
             },
         ])

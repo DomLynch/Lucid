@@ -171,7 +171,7 @@ class TestEntityClassification:
         assert _classify_entity_type("Apple Inc") == EntityType.ORGANIZATION
 
     def test_unknown(self):
-        assert _classify_entity_type("Brain") == EntityType.OTHER
+        assert _classify_entity_type("Nexus") == EntityType.OTHER
 
 
 # ---------------------------------------------------------------------------

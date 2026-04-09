@@ -147,7 +147,7 @@ async def main():
         result = await retain(
             bank_id=bank_id,
             content=(
-                "Alice is building a cognitive AI system called Brain. "
+                "Alice is building a cognitive AI system called Nexus. "
                 "He lives in London and has a new baby. He prefers direct "
                 "communication and hates sycophancy. He is the founder "
                 "of Global Digital Assets. He previously worked in fintech."
@@ -182,7 +182,7 @@ async def main():
             content=(
                 "Alice is also pursuing a part-time PhD. He works "
                 "12 hours a day and manages multiple dev teams working "
-                "on Brain simultaneously."
+                "on Nexus simultaneously."
             ),
             llm=llm,
             embedder=embedder,

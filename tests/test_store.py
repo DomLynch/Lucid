@@ -256,7 +256,7 @@ class TestObservations:
     async def test_save_and_get(self, store):
         obs = [
             Observation(id="o1", bank_id="b1", text="Alice prefers direct communication"),
-            Observation(id="o2", bank_id="b1", text="Brain uses a 3-lane architecture"),
+            Observation(id="o2", bank_id="b1", text="Nexus uses a modular architecture"),
         ]
         await store.save_observations(obs)
 
