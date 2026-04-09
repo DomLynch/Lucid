@@ -136,7 +136,7 @@ async def main():
         llm = OpenRouterLLMClient()
         embedder = SimpleEmbedder()
 
-        bank_id = "test-brain"
+        bank_id = "test-user"
 
         # -------------------------------------------------------------------
         # TEST 1: retain()
