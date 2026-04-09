@@ -282,8 +282,8 @@ The fact extraction logic, entity resolution, four-strategy retrieval, RRF fusio
 
 Lucid pairs naturally with:
 
-- **[NanoLetta](https://github.com/domininclynch/nanoletta)** — cognitive agent loop (Letta → 1.9k LOC). Wire Lucid in via the memory tool interface.
-- **[Temporal](https://github.com/domininclynch/temporal)** — temporal knowledge graph (Graphiti → 2.8k LOC). Knows *when* facts changed.
+- **[NanoLetta](https://github.com/DomLynch/NanoLetta)** — cognitive agent loop (Letta → 1.9k LOC). Wire Lucid in via the memory tool interface.
+- **[Temporal](https://github.com/DomLynch/Temporal)** — temporal knowledge graph (Graphiti → 2.8k LOC). Knows *when* facts changed.
 
 ---
 
@@ -304,4 +304,4 @@ MIT. See [LICENSE](LICENSE).
 
 ## Acknowledgments
 
-The memory architecture, fact taxonomy, and retrieval design are inspired by [Hindsight](https://github.com/getzep/hindsight) by Zep AI (MIT). Lucid is an independent extraction — not affiliated with Zep.
+The memory architecture, fact taxonomy, and retrieval design are inspired by [Hindsight](https://github.com/vectorize-io/hindsight) by Vectorize AI (MIT). Lucid is an independent extraction — not affiliated with Vectorize AI.
