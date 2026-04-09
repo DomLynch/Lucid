@@ -1,10 +1,10 @@
 # lucid
 
-> Hindsight's memory runtime — stripped from 239,000 lines to 2,000.
+> Hindsight's memory runtime. 239,000 lines stripped to 2,000.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
-[![Tests](https://img.shields.io/badge/tests-110%20passing-brightgreen.svg)](#tests)
+[![Tests](https://img.shields.io/badge/tests-113%20passing-brightgreen.svg)](#tests)
 
 Lucid is a memory runtime for AI agents. It extracts facts from conversations, stores them in a SQLite knowledge base, retrieves the most relevant ones on demand, and synthesises answers from memory using multi-turn reasoning.
 
@@ -257,7 +257,7 @@ python3 -m pytest tests/ -q --ignore=tests/test_e2e.py
 OPENAI_API_KEY=sk-... python3 -m pytest tests/test_e2e.py -v -s
 ```
 
-110 tests covering fact extraction, entity resolution, recall strategies, RRF fusion, synthesis, SQLite store.
+113 tests covering fact extraction, entity resolution, recall strategies, RRF fusion, synthesis, SQLite store.
 
 ---
 
