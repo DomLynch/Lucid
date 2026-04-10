@@ -325,4 +325,4 @@ MIT. See [LICENSE](LICENSE).
 
 The memory architecture, fact taxonomy, and retrieval design are inspired by [Hindsight](https://github.com/vectorize-io/hindsight) by Vectorize AI (MIT). Lucid is an independent extraction — not affiliated with Vectorize AI.
 
-Extracted from Hindsight at commit `f519fc4`. Not tracking upstream — this is a stable snapshot, not a rolling fork.
+Extracted from Hindsight's memory-runtime design. Not tracking upstream; this is a stable standalone extraction, not a rolling fork.
