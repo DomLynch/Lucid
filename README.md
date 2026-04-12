@@ -1,6 +1,6 @@
-# lucid
+# Lucid
 
-> Hindsight's memory runtime. 239,000 lines stripped to 2,000.
+> Minimal memory runtime for AI agents. Hindsight's memory runtime stripped from 239,000 lines to 2,000.
 
 [![Python 3.11+](https://img.shields.io/badge/python-3.11+-blue.svg)](https://www.python.org/downloads/)
 [![License: MIT](https://img.shields.io/badge/License-MIT-green.svg)](LICENSE)
